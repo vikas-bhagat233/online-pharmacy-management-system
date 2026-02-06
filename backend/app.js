@@ -37,18 +37,18 @@ const io = socketIo(server, {
 // Socket.io connection handling
 io.on('connection', (socket) => {
   console.log('New client connected:', socket.id);
-  
+
   // Join delivery tracking room
   socket.on('join-delivery', (deliveryId) => {
     socket.join(`delivery-${deliveryId}`);
     console.log(`Socket ${socket.id} joined delivery-${deliveryId}`);
   });
-  
+
   // Join order tracking room
   socket.on('join-order', (orderId) => {
     socket.join(`order-${orderId}`);
   });
-  
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
   });
@@ -76,6 +76,27 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
 // Serve frontend (so password reset links work without a separate static server)
 app.use('/frontend', express.static(path.join(__dirname, '..', 'frontend')));
 
+// Public Debug Email Route (Remove in production later)
+app.get('/debug-mail-public', async (req, res) => {
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASS;
+
+  const status = {
+    userConfigured: !!user,
+    passConfigured: !!pass,
+    userValue: user ? user.replace(/(.{2})(.*)(@.*)/, '$1***$3') : 'missing',
+    passLength: pass ? pass.length : 0
+  };
+
+  try {
+    const transporter = require('nodemailer').createTransport(require('./config/mail'));
+    await transporter.verify();
+    res.json({ ok: true, message: 'Connection to SMTP server is successful!', config: status });
+  } catch (error) {
+    res.status(500).json({ ok: false, error: error.message, config: status });
+  }
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -89,10 +110,10 @@ app.use('/api/delivery', deliveryRoutes); // NEW
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
-    socketConnections: io.engine.clientsCount 
+    socketConnections: io.engine.clientsCount
   });
 });
 
