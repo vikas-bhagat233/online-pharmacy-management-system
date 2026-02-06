@@ -386,7 +386,7 @@ exports.updateOrderStatus = async (req, res) => {
 
     let invoiceSection = '';
     if (normalizedStatus === 'delivered') {
-      const baseUrl = String(process.env.BACKEND_PUBLIC_URL || process.env.PUBLIC_URL || 'http://localhost:5000').replace(/\/$/, '');
+      const baseUrl = String(process.env.BACKEND_PUBLIC_URL || process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || 'https://pharmacy-backend-dkjv.onrender.com').replace(/\/$/, '');
       const token = jwt.sign(
         { typ: 'invoice', orderId: String(updated._id), userId: String(updated.user._id), role: 'user' },
         process.env.JWT_SECRET,
