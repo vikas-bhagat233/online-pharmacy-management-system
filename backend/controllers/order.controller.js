@@ -530,7 +530,12 @@ exports.downloadInvoice = async (req, res) => {
 
     // Most reliable default (especially on Windows/dev environments): pdfkit.
     if (renderer === 'pdfkit') {
-      return writeInvoicePdf(res, order, invoice);
+      try {
+        return writeInvoicePdf(res, order, invoice);
+      } catch (e) {
+        console.error('Invoice Generation Error (pdfkit):', e);
+        return res.status(500).send('Failed to generate PDF');
+      }
     }
 
     // Optional: better-looking HTML->PDF rendering (requires working Puppeteer/Chromium).
@@ -538,6 +543,7 @@ exports.downloadInvoice = async (req, res) => {
       try {
         return await writeInvoicePdfFromHtml(res, order, html);
       } catch (e) {
+        console.error('Puppeteer failed, falling back to pdfkit:', e);
         return writeInvoicePdf(res, order, invoice);
       }
     }

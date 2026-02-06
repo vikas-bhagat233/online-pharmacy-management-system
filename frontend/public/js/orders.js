@@ -110,7 +110,8 @@ function renderOrderCard(order) {
     ? `<button class="danger" type="button" onclick="cancelOrder('${id}')" style="font-size:12px; padding:6px 12px; width:auto; margin-top:10px; background:white; border:1px solid #dc2626; color:#dc2626; margin-right:8px;">Cancel Order</button>`
     : '';
 
-  const invoiceBtn = String(order.status) === 'delivered'
+  const allowedInvoiceStatuses = ['confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered'];
+  const invoiceBtn = allowedInvoiceStatuses.includes(String(order.status))
     ? `<button class="secondary" type="button" onclick="downloadInvoice('${id}')" style="font-size:12px; padding:6px 12px; width:auto; margin-top:10px;">Download Invoice</button>`
     : '';
 
