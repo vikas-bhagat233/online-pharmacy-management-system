@@ -13,7 +13,9 @@ function renderMedicines(list) {
       if (med.image.startsWith('http')) {
         imgUrl = med.image;
       } else {
-        imgUrl = `http://localhost:5000${med.image}`;
+        // Use Config instead of hardcoded localhost
+        const baseUrl = (typeof Config !== 'undefined' && Config.API_BASE) ? Config.API_BASE : 'http://localhost:5000';
+        imgUrl = `${baseUrl}${med.image}`;
       }
     }
 
