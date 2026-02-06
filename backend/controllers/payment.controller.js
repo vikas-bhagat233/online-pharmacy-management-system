@@ -103,6 +103,7 @@ exports.verify = async (req, res) => {
       totalAmount: Number(order.totalAmount || 0).toFixed(2),
       customerName: user?.name || '',
       customerEmail: user?.email || '',
+      customerPhone: order.phone || '',
       address: order.address || ''
     });
     await emailService.sendEmail(adminTo, 'New Order Confirmed (Paid)', html2);
