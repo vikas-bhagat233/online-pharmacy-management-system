@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Invoice {{invoiceNumber}}</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.14);
+      --muted: #94a3b8;
+      --text: #e5e7eb;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 14px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #6d5efc, #2dd4bf);
+      border-radius: 16px;
+      padding: 18px 20px;
+      color: #0b1020;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(11, 16, 32, 0.12);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .headerText {
+      min-width: 0;
+    }
+
+    .brand {
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      font-size: 12px;
+    }
+
+    .title {
+      margin-top: 6px;
+      font-weight: 900;
+      font-size: 22px;
+    }
+
+    .card {
+      margin-top: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .kv {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    th,
+    td {
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+      vertical-align: top;
+    }
+
+    th {
+      text-align: left;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .totalRow td {
+      font-weight: 900;
+      color: var(--white);
+    }
+
+    .footer {
+      margin-top: 12px;
+      text-align: center;
+      color: #64748b;
+      font-size: 11px;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        color: #111827;
+      }
+
+      .header {
+        color: #111827;
+      }
+
+      .card {
+        background: #ffffff;
+        border-color: #e5e7eb;
+      }
+
+      .muted {
+        color: #6b7280;
+      }
+
+      th {
+        color: #374151;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="header">
+      <div class="logo">{{logoBlock}}</div>
+      <div class="headerText">
+        <div class="brand">MEDICARE</div>
+        <div class="title">Invoice</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="grid">
+        <div>
+          <div class="muted">Invoice #</div>
+          <div class="kv">{{invoiceNumber}}</div>
+          <div style="height:10px"></div>
+          <div class="muted">Order ID</div>
+          <div class="kv">{{orderId}}</div>
+        </div>
+        <div>
+          <div class="muted">Date</div>
+          <div class="kv">{{invoiceDate}}</div>
+          <div style="height:10px"></div>
+          <div class="muted">Payment</div>
+          <div class="kv">{{paymentLabel}} ({{paymentStatus}})</div>
+          {{paymentRefLine}}
+        </div>
+      </div>
+
+      <div style="height:14px"></div>
+
+      <div class="grid">
+        <div>
+          <div class="muted">Billed To</div>
+          <div class="kv">{{customerName}}</div>
+          <div class="muted" style="margin-top:4px">{{customerEmail}}</div>
+        </div>
+        <div>
+          <div class="muted">Delivery Address</div>
+          <div class="kv">{{address}}</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th class="right">Qty</th>
+            <th class="right">Unit</th>
+            <th class="right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{itemsRows}}
+        </tbody>
+        <tbody>
+          <tr>
+            <td colspan="3" class="right muted">Subtotal</td>
+            <td class="right">₹{{subtotalAmount}}</td>
+          </tr>
+          {{deliveryRow}}
+          {{discountRow}}
+          {{codRow}}
+          <tr class="totalRow">
+            <td colspan="3" class="right">Total</td>
+            <td class="right">₹{{totalAmount}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="height:10px"></div>
+      <div class="muted">Note</div>
+      <div style="margin-top:6px; font-size:13px; line-height:1.6;">{{note}}</div>
+    </div>
+
+    <div class="footer">© {{year}} MediCare • Invoice generated automatically.</div>
+  </div>
+</body>
+
+</html>

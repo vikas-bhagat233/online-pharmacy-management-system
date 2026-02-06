@@ -1,0 +1,4 @@
+MongoDB connected
+[ensureAdmin] Admin user exists: admin@pharmacy.com
+Server running on port 5000 with Socket.io
+[0mGET /health [32m200[0m 3.986 ms - 76[0m

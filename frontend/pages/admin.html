@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../public/css/theme.css">
+    <link rel="stylesheet" href="../public/css/admin.css">
+    <script src="../public/js/config.js"></script>
+    <script src="../public/js/requireAdmin.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body class="admin-page">
+    <div class="app">
+        <div class="container">
+            <div class="card pad">
+                <div class="card-header">
+                    <div class="brand">
+                        <div class="badge">Admin</div>
+                        <div class="kicker">Manage medicines, orders & delivery</div>
+                    </div>
+                    <div class="actions" style="margin:0;">
+                        <button class="secondary" type="button" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+
+                <h2>Admin Dashboard</h2>
+
+                <div class="grid" style="margin-top: 10px;">
+                    <div class="col-12">
+                        <div class="card pad soft">
+                            <h3>Quick Stats</h3>
+                            <div class="grid" style="margin-top:10px;">
+                                <div class="col-3">
+                                    <div class="stat-card">
+                                        <div class="muted">Today’s orders</div>
+                                        <div id="statTodaysOrders" class="stat-value">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="stat-card">
+                                        <div class="muted">Pending dispatch</div>
+                                        <div id="statPendingDispatch" class="stat-value">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="stat-card">
+                                        <div class="muted">Delivered today</div>
+                                        <div id="statDeliveredToday" class="stat-value">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="stat-card">
+                                        <div class="muted">COD pending</div>
+                                        <div id="statCodPending" class="stat-value">
+                                            —</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="stat-card">
+                                        <div class="muted">Overall Delivered</div>
+                                        <div id="statOverallDelivered" class="stat-value">—</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="switchTab('orders')">Orders & Reports</button>
+                    <button class="admin-tab" onclick="switchTab('medicines')">Manage Medicines</button>
+                </div>
+
+                <div id="tab-medicines" class="tab-content">
+                    <div class="grid">
+
+                        <div class="grid" style="margin-top: 10px;">
+                            <div class="col-6">
+                                <div class="card pad soft">
+                                    <h3 id="medicines">Add Medicine</h3>
+                                    <form id="medicineForm">
+                                        <label>Name</label>
+                                        <input id="mName" required />
+
+                                        <label>Description</label>
+                                        <textarea id="mDesc" rows="3"></textarea>
+
+                                        <label>Category</label>
+                                        <input id="mCategory" />
+
+                                        <label>Price</label>
+                                        <input id="mPrice" type="number" step="0.01" required />
+
+                                        <label>Discount (%)</label>
+                                        <input id="mDiscount" type="number" step="1" min="0" max="100" value="0" />
+
+                                        <label>Stock</label>
+                                        <input id="mStock" type="number" step="1" required />
+
+                                        <label>Prescription Required</label>
+                                        <select id="mRx">
+                                            <option value="false">No</option>
+                                            <option value="true">Yes</option>
+                                        </select>
+
+                                        <label>Photo</label>
+                                        <input id="mImage" type="file" accept="image/*" />
+
+                                        <div class="actions">
+                                            <button type="submit">Save Medicine</button>
+                                        </div>
+                                        <div class="muted">Image upload saves to backend /uploads.</div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="card pad soft">
+                                    <h3>Medicines List</h3>
+                                    <div class="actions" style="margin: 10px 0; gap: 10px; align-items: center;">
+                                        <input id="medicineSearch" placeholder="Search medicines (name/category)…"
+                                            style="flex: 1;" />
+                                        <button class="secondary" type="button" id="medicineSearchClear">Clear</button>
+                                    </div>
+                                    <div id="medicinesList" class="muted">Loading…</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-orders" class="tab-content active">
+                <div class="grid">
+                    <div class="col-12">
+                        <div class="card pad soft" style="margin-top: 6px;">
+
+                            <div class="col-12">
+                                <div class="card pad soft" style="margin-top: 6px;">
+                                    <h3 id="orders">Orders</h3>
+                                    <div class="actions" style="margin: 10px 0; gap: 10px; align-items: center;">
+                                        <input id="ordersSearch"
+                                            placeholder="Search orders (status/address/customer/email/agent)…"
+                                            style="flex: 1;" />
+                                        <button class="secondary" type="button" id="ordersSearchClear">Clear</button>
+                                    </div>
+
+                                    <div class="admin-section-card">
+                                        <div
+                                            style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:end;">
+                                            <div style="flex:1;min-width:220px;">
+                                                <div class="muted" style="margin-bottom:6px;">Export Orders
+                                                    (CSV)</div>
+                                                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                                                    <input id="exportFrom" type="date" />
+                                                    <input id="exportTo" type="date" />
+                                                    <select id="exportStatus">
+                                                        <option value="">All statuses</option>
+                                                        <option value="placed">Placed</option>
+                                                        <option value="confirmed">Confirmed</option>
+                                                        <option value="dispatched">Dispatched</option>
+                                                        <option value="out_for_delivery">Out for delivery
+                                                        </option>
+                                                        <option value="delivered">Delivered</option>
+                                                        <option value="failed">Failed</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="actions" style="margin:0;">
+                                                <button class="secondary" type="button" id="exportOrdersBtn">Download
+                                                    Orders
+                                                    CSV</button>
+                                            </div>
+                                        </div>
+
+                                        <div style="height:10px;"></div>
+
+                                        <div
+                                            style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:end;">
+                                            <div style="flex:1;min-width:220px;">
+                                                <div class="muted" style="margin-bottom:6px;">Export Medicines
+                                                    (CSV)</div>
+                                                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                                                    <input id="exportMedThreshold" type="number" min="0" step="1"
+                                                        placeholder="Low stock threshold (e.g. 10)" />
+                                                </div>
+                                            </div>
+                                            <div class="actions" style="margin:0;">
+                                                <button class="secondary" type="button" id="exportMedicinesBtn">Download
+                                                    Medicines CSV</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card pad soft" style="margin-bottom: 12px;">
+                                        <div
+                                            style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                                            <h3 style="margin:0;">Low Stock Alert</h3>
+                                            <div class="muted">Stock ≤ <span id="lowStockThresholdLabel">10</span></div>
+                                        </div>
+                                        <div id="lowStockList" class="muted" style="margin-top: 10px;">Loading…
+                                        </div>
+                                    </div>
+
+                                    <div id="ordersList" class="muted">Loading…</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="../public/js/admin.js?v=6"></script>
+</body>
+
+</html>

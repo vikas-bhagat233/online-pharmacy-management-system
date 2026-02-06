@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Track Delivery</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../public/css/theme.css">
+    <link rel="stylesheet" href="../public/css/tracking.css">
+</head>
+
+<body>
+    <div class="app">
+        <div class="container">
+            <div class="card pad">
+                <div class="card-header">
+                    <div class="brand">
+                        <div class="badge">MediCare</div>
+                        <div class="kicker">Live tracking</div>
+                    </div>
+                    <div class="actions" style="margin:0;">
+                        <a href="orders.html"><button class="secondary" type="button">Orders</button></a>
+                        <button type="button" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+
+                <h2>Track Your Order</h2>
+                <div class="grid" style="margin-top:10px;">
+                    <div class="col-6">
+                        <label>Tracking Number</label>
+                        <input id="trackingInput" placeholder="Enter Tracking Number">
+                        <div class="actions" style="justify-content:flex-start;">
+                            <button type="button" onclick="trackOrder()">Track</button>
+                        </div>
+                        <div id="tracking-info" class="card pad soft" style="margin-top: 10px;">
+                            <p>Status: <span id="status"></span></p>
+                            <p>Estimated Delivery: <span id="eta"></span></p>
+                            <p>Delivery Agent: <span id="agent"></span></p>
+                        </div>
+                        <div class="muted" style="margin-top:10px;">Tip: set Google Maps key in localStorage
+                            `GOOGLE_MAPS_API_KEY`.</div>
+                    </div>
+                    <div class="col-6">
+                        <div id="map" class="card soft" style="height: 420px; width: 100%; overflow:hidden;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="../public/js/config.js"></script>
+    <script src="../public/js/tracking.js"></script>
+    <script>
+        // Avoid committing API keys: set it locally via DevTools Console:
+        // localStorage.setItem('GOOGLE_MAPS_API_KEY', 'YOUR_KEY_HERE')
+        (function loadGoogleMaps() {
+            const apiKey = localStorage.getItem('GOOGLE_MAPS_API_KEY');
+            if (!apiKey) {
+                console.warn('Google Maps key missing. Set localStorage.GOOGLE_MAPS_API_KEY to enable the map.');
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&callback=initMap`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
+    </script>
+</body>
+
+</html>

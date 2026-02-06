@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cart</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../public/css/theme.css">
+    <script src="../public/js/config.js"></script>
+    <script src="../public/js/requireAuth.js"></script>
+</head>
+
+<body>
+    <div class="app">
+        <div class="container">
+            <div class="card pad">
+                <div class="card-header">
+                    <div class="brand">
+                        <div class="badge">MediCare</div>
+                        <div class="kicker">Your cart</div>
+                    </div>
+                    <div class="actions" style="margin:0;">
+                        <a href="orders.html"><button class="secondary" type="button">My Orders</button></a>
+                        <a href="medicines.html"><button class="secondary" type="button">Back</button></a>
+                        <button type="button" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+
+                <h2>Your Cart <span id="cart-count-badge" class="muted"
+                        style="font-size: 0.8em; font-weight: normal;">(0
+                        items)</span></h2>
+                <div id="cart-items" class="list"></div>
+                <div class="actions" style="justify-content:flex-end;">
+                    <button type="button" id="checkout-btn" onclick="window.location.href='./checkout.html'">Proceed to
+                        checkout</button>
+                    <a href="./medicines.html"><button class="secondary" type="button">Continue shopping</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../public/js/cart.js?v=3"></script>
+</body>
+
+</html>

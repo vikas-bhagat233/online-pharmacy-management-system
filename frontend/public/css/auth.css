@@ -1,0 +1,45 @@
+/* Auth specific styles */
+
+.auth-container {
+    max-width: 480px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+.auth-container .card {
+    padding: 40px;
+    background: rgb(248, 247, 247);
+    border-radius: 8px;
+    /* Ensure it pops against the background */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.auth-container h2 {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 24px;
+}
+
+.auth-container label {
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.auth-container input {
+    margin-bottom: 16px;
+}
+
+.auth-container .actions {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.auth-container .footer-links {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e7e7e7;
+    font-size: 13px;
+    color: #565959;
+}

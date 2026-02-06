@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Checkout</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../public/css/theme.css">
+    <script src="../public/js/config.js"></script>
+    <script src="../public/js/requireAuth.js"></script>
+</head>
+
+<body>
+    <div class="app">
+        <div class="container" style="max-width:720px;">
+            <div class="card pad">
+                <div class="card-header">
+                    <div class="brand">
+                        <div class="badge">MediCare</div>
+                        <div class="kicker">Checkout</div>
+                    </div>
+                    <div class="actions" style="margin:0;">
+                        <a href="orders.html"><button class="secondary" type="button">My Orders</button></a>
+                        <a href="cart.html"><button class="secondary" type="button">Back</button></a>
+                        <button type="button" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+
+                <h2>Checkout</h2>
+                <div class="card pad soft" style="margin: 12px 0;">
+                    <div class="kicker">Order summary</div>
+                    <div id="checkout-summary" class="list" style="margin-top:10px;"></div>
+                    <div
+                        style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:10px;">
+                        <div><strong>Total</strong></div>
+                        <div><strong id="checkout-total">₹0.00</strong></div>
+                    </div>
+                    <div class="muted" style="margin-top:6px;">COD surcharge (if selected) is added to total.</div>
+                </div>
+
+                <label>Shipping Address</label>
+                <input type="text" id="address" placeholder="House, street, city, state, pincode">
+
+                <label>Phone Number</label>
+                <input type="tel" id="phone" placeholder="10-digit mobile number">
+
+
+
+                <label>Payment Method</label>
+                <div class="list" style="gap:10px;">
+                    <label class="item" style="align-items:center;">
+                        <input type="radio" name="paymentMethod" value="razorpay" checked style="width:auto;" />
+                        <div class="meta">
+                            <div><strong>Razorpay</strong></div>
+                            <div class="muted">Pay online (UPI / Card / NetBanking)</div>
+                        </div>
+                    </label>
+                    <label class="item" style="align-items:center;">
+                        <input type="radio" name="paymentMethod" value="cod" style="width:auto;" />
+                        <div class="meta">
+                            <div><strong>Cash on Delivery</strong></div>
+                            <div class="muted">Extra COD surcharge will apply</div>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="actions">
+                    <button type="button" onclick="placeOrder()">Place Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="../public/js/checkout.js?v=4"></script>
+</body>
+
+</html>

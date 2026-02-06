@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Order</title>
+</head>
+
+<body style="margin:0;padding:0;background:#0b1020;">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#0b1020;">
+    <tr>
+      <td align="center" style="padding:28px 14px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="720"
+          style="width:720px;max-width:100%;">
+          <tr>
+            <td style="padding:0 0 14px 0;">
+              <div style="font-family:Arial,Helvetica,sans-serif;color:#c7d2fe;font-size:12px;letter-spacing:0.5px;">
+                MEDICARE • ADMIN</div>
+              <div
+                style="font-family:Arial,Helvetica,sans-serif;color:#ffffff;font-size:22px;font-weight:900;line-height:1.2;margin-top:6px;">
+                New Order Received
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td
+              style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:18px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+                style="font-family:Arial,Helvetica,sans-serif;">
+                <tr>
+                  <td style="color:#9ca3af;font-size:12px;">Order ID</td>
+                  <td align="right" style="color:#ffffff;font-size:12px;font-weight:800;">{{orderId}}</td>
+                </tr>
+                <tr>
+                  <td style="color:#9ca3af;font-size:12px;padding-top:10px;">Payment</td>
+                  <td align="right" style="color:#ffffff;font-size:12px;font-weight:700;padding-top:10px;">
+                    {{paymentMethod}} ({{paymentStatus}})</td>
+                </tr>
+                <tr>
+                  <td style="color:#9ca3af;font-size:12px;padding-top:10px;">Total</td>
+                  <td align="right" style="color:#ffffff;font-size:16px;font-weight:900;padding-top:10px;">
+                    ₹{{totalAmount}}</td>
+                </tr>
+              </table>
+
+              <div style="height:14px;"></div>
+
+              <div
+                style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;">
+                <div style="font-family:Arial,Helvetica,sans-serif;color:#9ca3af;font-size:12px;">Customer</div>
+                <div
+                  style="font-family:Arial,Helvetica,sans-serif;color:#ffffff;font-size:14px;font-weight:800;margin-top:4px;">
+                  {{customerName}}</div>
+                <div style="height:10px;"></div>
+
+                <div style="font-family:Arial,Helvetica,sans-serif;color:#9ca3af;font-size:12px;">Email</div>
+                <div
+                  style="font-family:Arial,Helvetica,sans-serif;color:#ffffff;font-size:13px;font-weight:700;margin-top:4px;">
+                  {{customerEmail}}</div>
+                <div style="height:10px;"></div>
+
+                <div style="font-family:Arial,Helvetica,sans-serif;color:#9ca3af;font-size:12px;">Phone</div>
+                <div
+                  style="font-family:Arial,Helvetica,sans-serif;color:#ffffff;font-size:13px;font-weight:700;margin-top:4px;">
+                  {{customerPhone}}</div>
+                <div style="height:10px;"></div>
+
+                <div style="font-family:Arial,Helvetica,sans-serif;color:#9ca3af;font-size:12px;">Address</div>
+                <div
+                  style="font-family:Arial,Helvetica,sans-serif;color:#ffffff;font-size:13px;font-weight:700;margin-top:4px;">
+                  {{address}}</div>
+              </div>
+
+              <div style="height:14px;"></div>
+
+              <div style="background:linear-gradient(135deg,#6d5efc,#2dd4bf);border-radius:14px;padding:12px 14px;">
+                <div style="font-family:Arial,Helvetica,sans-serif;color:#0b1020;font-size:13px;font-weight:900;">
+                  Next: Open Admin → Orders to update status.
+                </div>
+              </div>
+
+              <div style="height:12px;"></div>
+
+              <div style="font-family:Arial,Helvetica,sans-serif;color:#64748b;font-size:11px;line-height:1.5;">
+                Automated notification from MediCare.
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>

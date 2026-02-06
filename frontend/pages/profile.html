@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Profile</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../public/css/theme.css">
+    <script src="../public/js/config.js"></script>
+    <script src="../public/js/requireAuth.js"></script>
+</head>
+
+<body>
+    <div class="app">
+        <div class="container" style="max-width:720px;">
+            <div class="card pad">
+                <div class="topbar">
+                    <div class="brand">
+                        <div class="badge">MediCare</div>
+                        <div class="kicker">Your profile</div>
+                    </div>
+                    <div class="actions" style="margin:0;">
+                        <a href="orders.html"><button class="secondary" type="button">My Orders</button></a>
+                        <a href="medicines.html"><button class="secondary" type="button">Back</button></a>
+                        <button type="button" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+
+                <h2>My Profile</h2>
+                <form id="profileForm" class="card pad soft" style="margin-top:12px;">
+                    <label>Name</label>
+                    <input id="pName" type="text" />
+
+                    <label>Email</label>
+                    <input id="pEmail" type="email" readonly style="background:#f9f9f9; color:#666;" />
+
+                    <label>Phone Number</label>
+                    <input id="pPhone" type="tel" placeholder="10-digit mobile number" />
+
+                    <label>Default Shipping Address</label>
+                    <textarea id="pAddress" rows="3" placeholder="House, street, city, state, pincode"></textarea>
+
+                    <div class="actions">
+                        <button type="submit">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../public/js/profile.js"></script>
+
+</html>

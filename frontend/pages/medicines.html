@@ -1,0 +1,44 @@
+<head>
+    <title>Medicines</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../public/css/theme.css">
+    <script src="../public/js/config.js"></script>
+    <script src="../public/js/requireAuth.js"></script>
+
+<body class="">
+    <div class="app">
+        <header class="topbar">
+            <div class="brand">
+                <a href="index.html" class="badge">MediCare</a>
+                <div class="kicker">Online Pharmacy</div>
+            </div>
+            <div class="actions">
+                <a href="orders.html">My Orders</a>
+                <a href="cart.html">View Cart</a>
+                <button type="button" class="secondary" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Search Section -->
+            <div class="search-container">
+                <h2>Find Medicines</h2>
+                <div class="search-input-wrapper">
+                    <input id="search" placeholder="Search by medicine name, brand, or category..."
+                        autocomplete="off" />
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div id="categoryFilters">
+                <!-- Categories injected by JS -->
+            </div>
+
+            <!-- Product Grid -->
+            <div id="medicines" class="product-grid"></div>
+        </div>
+    </div>
+    <script src="../public/js/medicines.js?v=3"></script>
+</body>
+
+</html>
