@@ -1,15 +1,14 @@
 module.exports = {
   host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false, // STARTTLS
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
   tls: {
-    // Do not fail on invalid certs
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    ciphers: 'SSLv3'
   },
-  // Force IPv4 as Render/Google IPv6 sometimes times out
   family: 4
 };
