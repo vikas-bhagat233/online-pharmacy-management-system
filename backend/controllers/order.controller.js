@@ -59,7 +59,11 @@ function buildInvoiceData(order, payment) {
   const totalAmount = Number(order.totalAmount ?? (subtotalAmount + deliveryCharge - discountAmount + codSurchargeAmount));
 
   const invoiceNumber = `INV-${String(order._id).slice(-8).toUpperCase()}`;
-  const invoiceDate = new Date().toLocaleString();
+  const invoiceDate = new Date().toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    dateStyle: 'medium',
+    timeStyle: 'medium'
+  });
 
   return {
     paymentMethod,
