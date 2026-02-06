@@ -78,35 +78,39 @@ exports.verify = async (req, res) => {
   });
   await Cart.updateOne({ user: req.user.id }, { $set: { items: [] } });
 
-  // Email customer + admin
+  // Email customer + admin (async, non-blocking)
   const user = await User.findById(req.user.id).select('email name');
-  if (user?.email) {
-    const html = renderTemplate(readTemplate('payment-success.html'), {
-      paymentId: razorpay_payment_id,
-      amount: Number(order.totalAmount || 0).toFixed(2)
-    });
-    await emailService.sendEmail(user.email, 'Payment Successful', html);
-  }
-  const adminTo = process.env.ADMIN_NOTIFY_EMAIL || process.env.ADMIN_EMAIL;
-  if (adminTo) {
-    const html = renderTemplate(readTemplate('payment-success.html'), {
-      paymentId: razorpay_payment_id,
-      amount: Number(order.totalAmount || 0).toFixed(2)
-    });
-    await emailService.sendEmail(adminTo, 'Payment Received', html);
+  try {
+    if (user?.email) {
+      const html = renderTemplate(readTemplate('payment-success.html'), {
+        paymentId: razorpay_payment_id,
+        amount: Number(order.totalAmount || 0).toFixed(2)
+      });
+      await emailService.sendEmail(user.email, 'Payment Successful', html);
+    }
+    const adminTo = process.env.ADMIN_NOTIFY_EMAIL || process.env.ADMIN_EMAIL;
+    if (adminTo) {
+      const html = renderTemplate(readTemplate('payment-success.html'), {
+        paymentId: razorpay_payment_id,
+        amount: Number(order.totalAmount || 0).toFixed(2)
+      });
+      await emailService.sendEmail(adminTo, 'Payment Received', html);
 
-    // Also notify admin that the order is confirmed/received
-    const html2 = renderTemplate(readTemplate('admin-order-notification.html'), {
-      orderId: order._id,
-      paymentMethod: 'Razorpay',
-      paymentStatus: 'paid',
-      totalAmount: Number(order.totalAmount || 0).toFixed(2),
-      customerName: user?.name || '',
-      customerEmail: user?.email || '',
-      customerPhone: order.phone || '',
-      address: order.address || ''
-    });
-    await emailService.sendEmail(adminTo, 'New Order Confirmed (Paid)', html2);
+      const html2 = renderTemplate(readTemplate('admin-order-notification.html'), {
+        orderId: order._id,
+        paymentMethod: 'Razorpay',
+        paymentStatus: 'paid',
+        totalAmount: Number(order.totalAmount || 0).toFixed(2),
+        customerName: user?.name || '',
+        customerEmail: user?.email || '',
+        customerPhone: order.phone || '',
+        address: order.address || ''
+      });
+      await emailService.sendEmail(adminTo, 'New Order Confirmed (Paid)', html2);
+    }
+  } catch (emailErr) {
+    console.error('Failed to send payment confirmation emails:', emailErr);
+    // Do not fail the request
   }
 
   res.json({ ok: true });
