@@ -1,29 +1,34 @@
-const nodemailer = require('nodemailer');
-const mailConfig = require('../config/mail');
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport(mailConfig);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 exports.sendEmail = async (to, subject, html) => {
   try {
-    const from = String(process.env.EMAIL_USER || '').trim();
-    const pass = String(process.env.EMAIL_PASS || '').trim();
+    const apiKey = process.env.RESEND_API_KEY;
 
-    // If email isn't configured, don't crash checkout flows.
-    const looksLikePlaceholder =
-      from === 'your_email@gmail.com' ||
-      pass === 'your_app_password';
-
-    if (!from || !pass || looksLikePlaceholder) {
-      console.warn('[email] Skipping send: EMAIL_USER/EMAIL_PASS not configured');
+    if (!apiKey) {
+      console.warn('[email] Skipping send: RESEND_API_KEY not configured');
       return { ok: false, skipped: true, reason: 'not_configured' };
     }
 
-    const mailOptions = { from, to, subject, html };
-    const info = await transporter.sendMail(mailOptions);
-    console.log('[email] Sent successfully:', info.messageId);
-    return { ok: true, info };
+    console.log(`[email] Sending to: ${to}, Subject: ${subject}`);
+
+    // Free tier must send FROM 'onboarding@resend.dev'
+    const { data, error } = await resend.emails.send({
+      from: 'MediCare <onboarding@resend.dev>',
+      to: [to],
+      subject: subject,
+      html: html,
+    });
+
+    if (error) {
+      console.error('[email] Resend API Error:', error);
+      return { ok: false, error: error };
+    }
+
+    console.log('[email] Sent successfully:', data?.id);
+    return { ok: true, info: data };
   } catch (err) {
-    // CRITICAL: Catch all errors so we don't block the checkout response!
     console.error('[email] Send failed (non-fatal):', err.message);
     return { ok: false, error: err.message };
   }
