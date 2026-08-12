@@ -61,7 +61,16 @@ app.use((req, res, next) => {
 });
 
 // Middleware
-app.use(cors());
+// Configure CORS explicitly so preflight requests return correct headers.
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+  credentials: true
+};
+app.use(cors(corsOptions));
+// Ensure OPTIONS preflight requests are handled for all routes
+app.options('*', cors(corsOptions));
 app.use(compression());
 app.use(express.json());
 app.use(morgan('dev'));
