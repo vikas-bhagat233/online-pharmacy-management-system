@@ -207,20 +207,6 @@ window.placeOrder = async function placeOrder() {
     name: 'MediCare',
     description: 'Order payment',
     order_id: data.razorpay?.orderId,
-    config: {
-      display: {
-        blocks: {
-          upi: {
-            name: 'Pay via UPI',
-            instruments: [{ method: 'upi' }]
-          }
-        },
-        sequence: ['block.upi'],
-        preferences: {
-          show_default_blocks: true
-        }
-      }
-    },
     handler: async function (response) {
       try {
         await verifyRazorpayPayment(data.order?._id, response);
