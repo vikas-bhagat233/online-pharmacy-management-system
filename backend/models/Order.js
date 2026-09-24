@@ -19,7 +19,7 @@ const OrderSchema = new mongoose.Schema({
     at: { type: Date, default: Date.now }
   }],
   deliveredAt: { type: Date, default: null, index: true },
-  paymentMethod: { type: String, enum: ['razorpay', 'cod'], default: 'cod' },
+  paymentMethod: { type: String, enum: ['paypal', 'cod'], default: 'cod' },
   paymentStatus: { type: String, enum: ['pending', 'paid', 'failed', 'cod_pending'], default: 'pending', index: true },
   address: String,
   phone: String,

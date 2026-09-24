@@ -2,7 +2,8 @@ const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const Payment = require('../models/Payment');
 const User = require('../models/User');
-const razorpay = require('../config/razorpay');
+const paypal = require('../config/paypal');
+const { createPaypalOrder } = require('./paypalController');
 const { decrementStockOrFail } = require('../services/orderService');
 const emailService = require('../services/emailService');
 const jwt = require('jsonwebtoken');
@@ -45,7 +46,7 @@ function getLogoBlockHtml() {
 
 function buildInvoiceData(order, payment) {
   const paymentMethod = String(order.paymentMethod || 'cod').toLowerCase();
-  const paymentLabel = paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online (Razorpay)';
+  const paymentLabel = paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online (PayPal)';
   const paymentStatus = String(order.paymentStatus || (payment?.status || 'pending'));
 
   const items = Array.isArray(order.items) ? order.items : [];
@@ -78,7 +79,7 @@ function buildInvoiceData(order, payment) {
     totalAmount,
     invoiceNumber,
     invoiceDate,
-    razorpayPaymentId: payment?.razorpayPaymentId || ''
+    providerPaymentId: payment?.providerPaymentId || ''
   };
 }
 
@@ -103,8 +104,8 @@ function writeInvoicePdf(res, order, invoice) {
   doc.font('Helvetica').fontSize(10).text(`Date: ${invoice.invoiceDate}`, 40, 138);
   doc.text(`Order ID: ${String(order._id)}`, 40, 154);
   doc.text(`Payment: ${invoice.paymentLabel} (${invoice.paymentStatus})`, 40, 170);
-  if (invoice.razorpayPaymentId) {
-    doc.text(`Payment ID: ${invoice.razorpayPaymentId}`, 40, 186);
+  if (invoice.providerPaymentId) {
+    doc.text(`Payment ID: ${invoice.providerPaymentId}`, 40, 186);
   }
 
   // Customer
@@ -257,7 +258,7 @@ exports.checkout = async (req, res) => {
   if (!address) return res.status(400).json({ error: 'Address is required' });
   if (!phone) return res.status(400).json({ error: 'Phone number is required' });
 
-  if (!['cod', 'razorpay'].includes(paymentMethod)) {
+  if (!['cod', 'paypal'].includes(paymentMethod)) {
     return res.status(400).json({ error: 'Invalid paymentMethod' });
   }
 
@@ -369,30 +370,18 @@ exports.checkout = async (req, res) => {
     });
   }
 
-  // Razorpay: create razorpay order, store Payment record, return details to frontend
-  const razorpayOrder = await razorpay.orders.create({
-    amount: Math.round(totalAmount * 100),
-    currency: 'INR',
-    receipt: `order_${order._id}`
-  });
+  if (!paypal.isConfigured()) {
+    await Order.findByIdAndUpdate(order._id, { status: 'failed', paymentStatus: 'failed' });
+    return res.status(503).json({ error: 'PayPal is not configured' });
+  }
 
-  await Payment.create({
-    order: order._id,
-    razorpayId: razorpayOrder.id,
-    amount: totalAmount,
-    currency: 'INR',
-    status: 'created'
-  });
-
-  res.json({
-    order,
-    razorpay: {
-      keyId: process.env.RAZORPAY_KEY_ID,
-      orderId: razorpayOrder.id,
-      amount: razorpayOrder.amount,
-      currency: razorpayOrder.currency
-    }
-  });
+  try {
+    const paypalOrder = await createPaypalOrder({ order, req });
+    res.json({ order, paypal: paypalOrder });
+  } catch (error) {
+    await Order.findByIdAndUpdate(order._id, { status: 'failed', paymentStatus: 'failed' });
+    res.status(502).json({ error: error.message || 'Unable to create PayPal order' });
+  }
 };
 
 exports.getUserOrders = async (req, res) => {
@@ -501,8 +490,8 @@ exports.downloadInvoice = async (req, res) => {
     `
     : '';
 
-  const paymentRefLine = invoice.razorpayPaymentId
-    ? `<div class="muted" style="margin-top:6px;">Payment ID: ${escapeHtml(invoice.razorpayPaymentId)}</div>`
+  const paymentRefLine = invoice.providerPaymentId
+    ? `<div class="muted" style="margin-top:6px;">Payment ID: ${escapeHtml(invoice.providerPaymentId)}</div>`
     : '';
 
   const note = paymentMethod === 'cod'

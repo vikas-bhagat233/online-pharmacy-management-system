@@ -22,7 +22,7 @@ function calcSubtotal(items) {
 
 function selectedPaymentMethod() {
   const el = document.querySelector('input[name="paymentMethod"]:checked');
-  return el ? el.value : 'razorpay';
+  return el ? el.value : 'paypal';
 }
 
 function getCodSurcharge() {
@@ -147,23 +147,18 @@ window.applyCoupon = function () {
   }
 };
 
-async function verifyRazorpayPayment(orderId, rsp) {
-  const res = await fetch(`${API}/payments/verify`, {
+async function capturePaypalPayment(orderId, paypalOrderId) {
+  const res = await fetch(`${API}/paypal/capture-order`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token()}`
     },
-    body: JSON.stringify({
-      orderId,
-      razorpay_order_id: rsp.razorpay_order_id,
-      razorpay_payment_id: rsp.razorpay_payment_id,
-      razorpay_signature: rsp.razorpay_signature
-    })
+    body: JSON.stringify({ orderId, paypalOrderId })
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Payment verification failed');
+  if (!res.ok) throw new Error(data.error || 'PayPal payment capture failed');
 }
 
 window.placeOrder = async function placeOrder() {
@@ -194,35 +189,8 @@ window.placeOrder = async function placeOrder() {
     return;
   }
 
-  // Razorpay: open checkout
-  if (!window.Razorpay) {
-    alert('Razorpay SDK not loaded');
-    return;
-  }
-
-  const options = {
-    key: data.razorpay?.keyId,
-    amount: data.razorpay?.amount,
-    currency: data.razorpay?.currency || 'INR',
-    name: 'MediCare',
-    description: 'Order payment',
-    order_id: data.razorpay?.orderId,
-    handler: async function (response) {
-      try {
-        await verifyRazorpayPayment(data.order?._id, response);
-        alert('Payment successful!');
-        window.location.href = 'orders.html';
-      } catch (e) {
-        alert(e.message || 'Payment verification failed');
-      }
-    }
-  };
-
-  const rzp = new Razorpay(options);
-  rzp.on('payment.failed', function () {
-    alert('Payment failed');
-  });
-  rzp.open();
+  if (!data.paypal?.approvalUrl) return alert('PayPal checkout could not be started');
+  window.location.href = data.paypal.approvalUrl;
 };
 
 // Keep summary updated when switching payment methods
@@ -255,7 +223,23 @@ async function autoFillProfile() {
   }
 }
 
+async function handlePaypalReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get('orderId');
+  const paypalOrderId = params.get('paypal_order_id') || params.get('token');
+  if (!orderId || !paypalOrderId || params.get('cancelled') === 'true') return;
+
+  try {
+    await capturePaypalPayment(orderId, paypalOrderId);
+    alert('Payment successful!');
+    window.location.href = 'orders.html';
+  } catch (error) {
+    alert(error.message || 'PayPal payment capture failed');
+  }
+}
+
 window.onload = () => {
   loadCheckoutMeta().finally(() => renderSummary());
   autoFillProfile();
+  handlePaypalReturn();
 };

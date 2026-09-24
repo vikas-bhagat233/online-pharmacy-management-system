@@ -2,11 +2,9 @@ const mongoose = require('mongoose');
 
 const PaymentSchema = new mongoose.Schema({
   order: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' },
-  // Razorpay order id (from razorpay.orders.create)
-  razorpayId: String,
-  // Razorpay payment id (from checkout success)
-  razorpayPaymentId: String,
-  razorpaySignature: String,
+  provider: { type: String, enum: ['paypal'], default: 'paypal' },
+  providerOrderId: String,
+  providerPaymentId: String,
   amount: Number,
   currency: { type: String, default: 'INR' },
   status: { type: String, enum: ['created', 'paid', 'failed'], default: 'created' },

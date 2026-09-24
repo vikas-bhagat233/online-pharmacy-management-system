@@ -14,7 +14,7 @@ const medicineRoutes = require('./routes/medicine.routes');
 const categoryRoutes = require('./routes/category.routes');
 const cartRoutes = require('./routes/cart.routes');
 const orderRoutes = require('./routes/order.routes');
-const paymentRoutes = require('./routes/payment.routes');
+const paypalRoutes = require('./routes/paypal');
 const adminRoutes = require('./routes/admin.routes');
 const deliveryRoutes = require('./routes/delivery.routes'); // NEW
 
@@ -113,7 +113,7 @@ app.use('/api/medicines', medicineRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/payments', paymentRoutes);
+app.use('/api/paypal', paypalRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/delivery', deliveryRoutes); // NEW
 
