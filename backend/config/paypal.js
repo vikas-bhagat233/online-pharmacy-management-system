@@ -32,9 +32,20 @@ function getOrdersController() {
   return new OrdersController(client);
 }
 
+function getOrderAmountInPaypalCurrency(amountInr) {
+  const exchangeRate = Number(process.env.PAYPAL_INR_TO_USD || 0.012);
+  if (!Number.isFinite(exchangeRate) || exchangeRate <= 0) {
+    throw new Error('PAYPAL_INR_TO_USD must be a positive number');
+  }
+
+  return Math.max(0.01, Number((Number(amountInr || 0) * exchangeRate).toFixed(2))).toFixed(2);
+}
+
 module.exports = {
   getClient,
   getOrdersController,
+  getOrderAmountInPaypalCurrency,
   isConfigured,
-  mode: () => String(process.env.PAYPAL_MODE || 'sandbox').toLowerCase()
+  mode: () => String(process.env.PAYPAL_MODE || 'sandbox').toLowerCase(),
+  currency: () => 'USD'
 };

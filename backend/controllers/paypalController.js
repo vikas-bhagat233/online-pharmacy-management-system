@@ -35,8 +35,8 @@ async function createPaypalOrder({ order, req }) {
         referenceId: String(order._id),
         invoiceId: `order_${order._id}`,
         amount: {
-          currencyCode: 'INR',
-          value: Number(order.totalAmount).toFixed(2)
+          currencyCode: paypal.currency(),
+          value: paypal.getOrderAmountInPaypalCurrency(order.totalAmount)
         }
       }],
       applicationContext: {
@@ -58,6 +58,8 @@ async function createPaypalOrder({ order, req }) {
     providerOrderId: result.id,
     amount: order.totalAmount,
     currency: 'INR',
+    providerAmount: Number(paypal.getOrderAmountInPaypalCurrency(order.totalAmount)),
+    providerCurrency: paypal.currency(),
     status: 'created'
   });
 
@@ -172,7 +174,7 @@ exports.connection = async (req, res) => {
     await paypal.getOrdersController().createOrder({
       body: {
         intent: 'CAPTURE',
-        purchaseUnits: [{ amount: { currencyCode: 'INR', value: '0.01' } }]
+        purchaseUnits: [{ amount: { currencyCode: paypal.currency(), value: '0.01' } }]
       }
     });
     res.json({ ok: true, message: 'PayPal connection is successful', config });
